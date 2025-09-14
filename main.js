@@ -1,162 +1,73 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const searchBtn = document.getElementById('searchBtn');
-    const keywordInput = document.getElementById('keyword');
-    const sortSelect = document.getElementById('sort');
-    const resultsDiv = document.getElementById('results');
-    const loadingDiv = document.getElementById('loading');
-    const searchForm = document.getElementById('searchForm');
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('searchForm');
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
 
-    // Subreddits to search
+    // Curated list of programming/coding subreddits
     const subreddits = [
-        'reactjs',
-        'django',
-        'vuejs',
-        'ProgrammingIdeas',
-        'learnprogramming',
-        'programming',
-        'opensource'
+        'programming', 'learnprogramming', 'webdev', 'coding', 'cscareerquestions',
+        'javascript', 'python', 'reactjs', 'cpp', 'java', 'compsci', 'gamedev',
+        'opensource', 'devops', 'dotnet', 'django', 'node', 'flutterdev',
+        'androiddev', 'iosprogramming'
     ];
 
-    // Helper: format date
-    function timeAgo(date) {
-        const now = new Date();
-        const seconds = Math.floor((now - date) / 1000);
-        let interval = Math.floor(seconds / 31536000);
-        if (interval >= 1) return interval + " year" + (interval > 1 ? "s" : "") + " ago";
-        interval = Math.floor(seconds / 2592000);
-        if (interval >= 1) return interval + " month" + (interval > 1 ? "s" : "") + " ago";
-        interval = Math.floor(seconds / 86400);
-        if (interval >= 1) return interval + " day" + (interval > 1 ? "s" : "") + " ago";
-        interval = Math.floor(seconds / 3600);
-        if (interval >= 1) return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
-        interval = Math.floor(seconds / 60);
-        if (interval >= 1) return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
-        return "just now";
-    }
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const keyword = document.getElementById('keyword').value.trim();
+        const sort = document.getElementById('sort').value;
 
-    // Fetch posts from Reddit
-    async function fetchPosts(keyword) {
-        let allPosts = [];
-        for (const subreddit of subreddits) {
-            const url = `https://www.reddit.com/r/${subreddit}/search.json?q=${encodeURIComponent(keyword)}&restrict_sr=1&sort=relevance&limit=10`;
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                const posts = data.data.children.map(child => child.data);
-                allPosts = allPosts.concat(posts);
-            } catch (e) {
-                // Ignore errors
-            }
-        }
-        return allPosts;
-    }
+        results.innerHTML = '';
+        loading.style.display = 'block';
 
-    // Sort posts
-    function sortPosts(posts, sortBy) {
-        if (sortBy === 'upvotes') {
-            return posts.sort((a, b) => b.ups - a.ups);
-        } else if (sortBy === 'date') {
-            return posts.sort((a, b) => b.created_utc - a.created_utc);
-        } else {
-            return posts;
-        }
-    }
-
-    // Render posts
-    function renderPosts(posts, keyword) {
-        resultsDiv.innerHTML = '';
-        if (posts.length === 0) {
-            resultsDiv.innerHTML = `
-                <div class="no-results">
-                    <i class="fas fa-search"></i>
-                    No results found for <strong>${keyword}</strong>.
-                </div>
-            `;
-            return;
-        }
-        posts.forEach(post => {
-            // Build Reddit thread link
-            const threadUrl = `https://reddit.com${post.permalink}`;
-            // Subreddit link
-            const subredditUrl = `https://www.reddit.com/r/${post.subreddit}/search?q=${encodeURIComponent(keyword)}&restrict_sr=1`;
-            resultsDiv.innerHTML += `
-                <div class="result-card">
-                    <div class="result-header">
-                        <div class="result-upvotes"><i class="fas fa-arrow-up"></i> ${post.ups}</div>
-                        <div class="result-date">${timeAgo(new Date(post.created_utc * 1000))}</div>
-                    </div>
-                    <h3 class="result-title">${post.title}</h3>
-                    <p class="result-content">${post.selftext ? post.selftext.substring(0, 200) + '...' : ''}</p>
-                    <div class="result-footer">
-                        <a href="${subredditUrl}" class="result-subreddit" target="_blank">r/${post.subreddit}</a>
-                        <a href="${threadUrl}" class="result-link" target="_blank">View thread <i class="fas fa-external-link-alt"></i></a>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    // MAIN SEARCH HANDLER
-    async function handleSearch(e) {
-        e?.preventDefault();
-
-        const keyword = keywordInput.value.trim();
-        const sortBy = sortSelect.value;
         if (!keyword) {
-            alert('Please enter a framework or technology to search for');
+            loading.style.display = 'none';
+            results.innerHTML = `<div class="result-item"><span class="result-title">Please enter a keyword to search.</span></div>`;
             return;
         }
 
-        // Button UX improvements
-        searchBtn.disabled = true;
-        addButtonRipple(searchBtn, e);
+        // Map sort option to Reddit API sort
+        let redditSort = 'relevance';
+        if (sort === 'upvotes') redditSort = 'top';
+        if (sort === 'date') redditSort = 'new';
 
-        loadingDiv.style.display = 'block';
-        resultsDiv.innerHTML = '';
+        // Fetch from each subreddit (limit to 5 results per subreddit for performance)
+        const fetchPromises = subreddits.map(sub =>
+            fetch(`https://www.reddit.com/r/${sub}/search.json?q=${encodeURIComponent(keyword)}&sort=${redditSort}&restrict_sr=1&limit=5`)
+                .then(res => res.json())
+                .then(data => data.data.children.map(post => ({
+                    title: post.data.title,
+                    url: `https://reddit.com${post.data.permalink}`,
+                    meta: `r/${sub} | ${post.data.ups} upvotes | ${new Date(post.data.created_utc * 1000).toLocaleDateString()}`,
+                    desc: post.data.selftext ? post.data.selftext.substring(0, 180) + '...' : 'No description available.'
+                })))
+                .catch(() => [])
+        );
 
-        const posts = await fetchPosts(keyword);
-        const sortedPosts = sortPosts(posts, sortBy);
-        renderPosts(sortedPosts, keyword);
+        // Wait for all fetches
+        const allResults = (await Promise.all(fetchPromises)).flat();
 
-        loadingDiv.style.display = 'none';
-        searchBtn.disabled = false;
-    }
-
-    // Ripple effect
-    function addButtonRipple(button, e) {
-        if (!e) return;
-        // Remove any leftover ripples
-        const oldRipple = button.querySelector('.btn-ripple');
-        if (oldRipple) oldRipple.remove();
-
-        const circle = document.createElement('span');
-        circle.className = 'btn-ripple';
-        const rect = button.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        circle.style.width = circle.style.height = `${size}px`;
-
-        // Get click coordinates relative to button
-        let x = e.type.startsWith('touch') 
-            ? e.touches[0].clientX - rect.left
-            : e.clientX - rect.left;
-        let y = e.type.startsWith('touch')
-            ? e.touches[0].clientY - rect.top
-            : e.clientY - rect.top;
-
-        circle.style.left = `${x - size / 2}px`;
-        circle.style.top = `${y - size / 2}px`;
-
-        button.appendChild(circle);
-        circle.addEventListener('animationend', () => circle.remove());
-    }
-
-    // Events
-    searchForm.addEventListener('submit', handleSearch);
-    searchBtn.addEventListener('click', handleSearch);
-    searchBtn.addEventListener('touchstart', function(e){ addButtonRipple(searchBtn, e); });
-    keywordInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            handleSearch(e);
+        // Optionally, sort combined results by upvotes or date
+        let sortedResults = allResults;
+        if (sort === 'upvotes') {
+            sortedResults = allResults.sort((a, b) => parseInt(b.meta.split(' ')[2]) - parseInt(a.meta.split(' ')[2]));
+        } else if (sort === 'date') {
+            sortedResults = allResults.sort((a, b) => new Date(b.meta.split('|')[2]) - new Date(a.meta.split('|')[2]));
         }
+
+        loading.style.display = 'none';
+
+        if (sortedResults.length === 0) {
+            results.innerHTML = `<div class="result-item"><span class="result-title">No results found for "${keyword}".</span></div>`;
+            return;
+        }
+
+        results.innerHTML = sortedResults.map(item => `
+            <div class="result-item">
+                <a href="${item.url}" class="result-title" target="_blank" rel="noopener">${item.title}</a>
+                <div class="result-meta">${item.meta}</div>
+                <div class="result-desc">${item.desc}</div>
+            </div>
+        `).join('');
     });
 });
+
