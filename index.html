@@ -2,71 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>redditpal - Find Programming Ideas from Reddit</title>
+    <title>RedditPal - Find Programming Ideas from Reddit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* ...existing CSS... */
-
-        /* Improved button styles */
-        .search-controls button {
-            position: relative;
-            padding: 12px 24px;
-            background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
-            color: #fff;
-            border: none;
-            border-radius: 22px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 1.1rem;
-            font-family: inherit;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-            outline: none;
-            overflow: hidden;
-        }
-        .search-controls button:disabled {
-            background: #888;
-            color: #eee;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-        .search-controls button:hover:not(:disabled),
-        .search-controls button:focus:not(:disabled) {
-            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
-            transform: translateY(-2px) scale(1.04);
-            box-shadow: 0 4px 14px rgba(0,0,0,0.21);
-        }
-        .search-controls button:active:not(:disabled) {
-            transform: scale(0.98);
-            box-shadow: 0 1px 4px rgba(0,0,0,0.13);
-        }
-        /* Ripple effect for button */
-        .btn-ripple {
-            position: absolute;
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-            background-color: rgba(255,255,255,0.5);
-            pointer-events: none;
-        }
-        @keyframes ripple {
-            to {
-                transform: scale(3.5);
-                opacity: 0;
-            }
-        }
-        /* ...rest of your CSS unchanged... */
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <a href="index.html" class="logo">redditpal</a>
-        <div class="header-desc">Find programming ideas from Reddit, sorted your way!</div>
+        <a href="index.html" class="logo"><i class="fab fa-reddit"></i> RedditPal</a>
+        <div class="header-desc">Discover programming project ideas from top Reddit communities</div>
     </header>
-    <div class="container">
-        <div class="search-section">
-            <h2 class="search-title"><i class="fas fa-search"></i> Search Reddit for Project Ideas</h2>
-            <form class="search-controls" id="searchForm" autocomplete="off" onsubmit="return false;">
+    <main class="container">
+        <section class="search-section">
+            <h2 class="search-title"><i class="fas fa-search"></i> Find Project Ideas</h2>
+            <form class="search-controls" id="searchForm" autocomplete="off">
                 <span class="terminal-prompt">$</span>
                 <input type="text" id="keyword" placeholder="Type a framework (e.g. React, Django)" />
                 <span class="blinking-cursor">|</span>
@@ -79,14 +28,14 @@
                     <i class="fas fa-search"></i> Search
                 </button>
             </form>
-        </div>
+        </section>
         <div class="loading" id="loading">
             <i class="fas fa-spinner fa-spin"></i> Searching Reddit for ideas...
         </div>
         <div class="results" id="results"></div>
-    </div>
+    </main>
     <footer>
-        <p>redditpal &copy; 2025 | Find inspiration for your next coding project</p>
+        <p>RedditPal &copy; 2025 | Find inspiration for your next coding project</p>
     </footer>
     <script src="main.js"></script>
 </body>
