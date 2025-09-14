@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <a href="index.html" class="logo"><i class="fab fa-reddit"></i> RedditPal</a>
-        <div class="header-desc">Discover programming project ideas from top Reddit communities</div>
+    <header class="terminal-header">
+        <a href="index.html" class="logo"><i class="fab fa-reddit"></i> <span>RedditPal</span></a>
+        <span class="header-desc">Discover programming project ideas from top Reddit communities</span>
     </header>
-    <main class="container">
+    <main class="container terminal-window">
         <section class="search-section">
             <h2 class="search-title"><i class="fas fa-search"></i> Find Project Ideas</h2>
             <form class="search-controls" id="searchForm" autocomplete="off">
@@ -34,7 +34,7 @@
         </div>
         <div class="results" id="results"></div>
     </main>
-    <footer>
+    <footer class="terminal-footer">
         <p>RedditPal &copy; 2025 | Find inspiration for your next coding project</p>
     </footer>
     <script src="main.js"></script>
