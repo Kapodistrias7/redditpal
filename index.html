@@ -9,12 +9,20 @@
 </head>
 <body>
     <header class="terminal-header">
-        <a href="index.html" class="logo"><i class="fab fa-reddit"></i> <span>RedditPal</span></a>
-        <span class="header-desc">Find project ideas from top Reddit communities</span>
+        <div class="logo-container">
+            <a href="index.html" class="logo">
+                <i class="fab fa-reddit"></i> <span>RedditPal</span>
+            </a>
+        </div>
+        <div class="header-desc-container">
+            <span class="header-desc">
+                Discover programming project ideas from top Reddit communities
+            </span>
+        </div>
     </header>
     <main class="container terminal-window">
         <section class="search-section">
-            <h2 class="search-title"><i class="fas fa-search"></i> Search Projects</h2>
+            <h2 class="search-title"><i class="fas fa-search"></i> Find Project Ideas</h2>
             <form class="search-controls" id="searchForm" autocomplete="off">
                 <span class="terminal-prompt">$</span>
                 <input type="text" id="keyword" placeholder="Type a framework (e.g. React, Django)" />
@@ -30,7 +38,7 @@
             </form>
         </section>
         <div class="loading" id="loading">
-            <i class="fas fa-spinner fa-spin"></i> Searching Reddit...
+            <i class="fas fa-spinner fa-spin"></i> Searching Reddit for ideas...
         </div>
         <div class="results" id="results"></div>
     </main>
