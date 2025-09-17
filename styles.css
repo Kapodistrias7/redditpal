@@ -215,22 +215,67 @@ button:hover {
     letter-spacing: 1px;
 }
 
-/* --- Subreddit Autocomplete Styles --- */
+.subreddit-autocomplete-container {
+    position: relative;
+    width: 320px; /* Increased width */
+    min-width: 220px;
+}
+
+input[type="text"]#subreddit {
+    width: 320px; /* Match container */
+    min-width: 220px;
+}
+
 .suggestions {
     position: absolute;
     background: #222;
     border: 1px solid #00ff00;
     border-radius: 4px;
     z-index: 10;
-    max-height: 180px;
+    max-height: 240px;
     overflow-y: auto;
-    width: 220px;
+    width: 100%; /* Always match input width */
     color: #00ff00;
     font-family: inherit;
     font-size: 1rem;
     display: none;
     left: 0;
     top: 100%;
+    box-sizing: border-box;
+}
+
+.suggestion-item {
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    font-size: 1.05rem;
+}
+
+.suggestion-item:hover, .suggestion-item.active {
+    background: #00ff00;
+    color: #181818;
+}
+
+button#searchBtn {
+    margin-left: 12px;
+    min-width: 110px;
+    font-size: 1.1rem;
+    padding: 0.6rem 1.2rem;
+}
+
+@media (max-width: 600px) {
+    .subreddit-autocomplete-container,
+    .suggestions,
+    input[type="text"]#subreddit {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+    }
+    button#searchBtn {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
 }
 
 .suggestion-item {
