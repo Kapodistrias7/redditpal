@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const loading = document.getElementById('loading');
     const results = document.getElementById('results');
 
-    // Curated list of programming/coding subreddits
     const subreddits = [
         'programming', 'learnprogramming', 'webdev', 'coding', 'cscareerquestions',
         'javascript', 'python', 'reactjs', 'cpp', 'java', 'compsci', 'gamedev',
@@ -12,33 +11,36 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     let keyword = '';
-    let sort = 'relevance';
+    let sort = 'hot';
     let page = 0;
-    const limit = 5; // posts per subreddit per page
+    const limit = 5;
     let isLoading = false;
     let allResults = [];
-    let afters = {}; // Track 'after' for each subreddit
+    let afters = {};
 
-    // Helper to fetch posts for a page
+    function getEndpoint(sub, sort, after, keyword) {
+        let url = '';
+        if (sort === 'relevance') {
+            url = `https://www.reddit.com/r/${sub}/search.json?q=${encodeURIComponent(keyword)}&sort=relevance&restrict_sr=1&limit=${limit}`;
+            if (after) url += `&after=${after}`;
+        } else if (sort === 'hot' || sort === 'new' || sort === 'top' || sort === 'rising') {
+            url = `https://www.reddit.com/r/${sub}/${sort}.json?limit=${limit}`;
+            if (after) url += `&after=${after}`;
+        }
+        return url;
+    }
+
     async function fetchPosts(pageNum) {
         isLoading = true;
         loading.style.display = 'block';
 
-        // Map sort option to Reddit API sort
-        let redditSort = 'relevance';
-        if (sort === 'upvotes') redditSort = 'top';
-        if (sort === 'date') redditSort = 'new';
-
-        // For each subreddit, fetch the next page using 'after'
         const fetchPromises = subreddits.map(async sub => {
             let after = afters[sub] || '';
-            let url = `https://www.reddit.com/r/${sub}/search.json?q=${encodeURIComponent(keyword)}&sort=${redditSort}&restrict_sr=1&limit=${limit}`;
-            if (after) url += `&after=${after}`;
+            let url = getEndpoint(sub, sort, after, keyword);
 
             try {
                 const res = await fetch(url);
                 const data = await res.json();
-                // Save the 'after' token for next page
                 afters[sub] = data.data.after;
 
                 return data.data.children.map(post => ({
@@ -59,13 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Sort combined results
         let sortedResults = allResults;
-        if (sort === 'upvotes') {
+        if (sort === 'top') {
             sortedResults = allResults.slice().sort((a, b) => b.upvotes - a.upvotes);
-        } else if (sort === 'date') {
+        } else if (sort === 'new') {
             sortedResults = allResults.slice().sort((a, b) => b.date - a.date);
-        }
+        } // hot/rising/relevance: keep Reddit's order
 
-        // Render
         renderResults(sortedResults);
 
         isLoading = false;
@@ -86,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    // Reset and search
     async function startSearch() {
         results.innerHTML = '';
         allResults = [];
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         keyword = document.getElementById('keyword').value.trim();
         sort = document.getElementById('sort').value;
 
-        if (!keyword) {
+        if (sort === 'relevance' && !keyword) {
             results.innerHTML = `<div class="result-item"><span class="result-title">Please enter a keyword to search.</span></div>`;
             return;
         }
@@ -111,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', async () => {
         if (isLoading) return;
         if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 200)) {
-            // Near bottom
             page++;
             await fetchPosts(page);
         }
