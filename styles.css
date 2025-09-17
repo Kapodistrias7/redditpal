@@ -86,6 +86,8 @@ body {
     border: 1px solid #00ff00;
     box-shadow: 0 0 8px #00ff0040;
     position: relative;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    max-width: 100%;
 }
 
 .terminal-prompt {
@@ -94,7 +96,19 @@ body {
     font-size: 1.2rem;
 }
 
-input[type="text"] {
+.subreddit-autocomplete-container {
+    position: relative;
+    flex: 1 1 220px;
+    min-width: 0;
+    max-width: 220px;
+}
+
+input[type="text"]#subreddit,
+input[type="text"]#keyword {
+    width: 220px;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
     background: #181818;
     color: #e0e0e0;
     border: none;
@@ -102,13 +116,45 @@ input[type="text"] {
     font-size: 1rem;
     padding: 0.5rem;
     outline: none;
-    width: 220px;
     font-family: inherit;
     transition: border-color 0.2s;
 }
 
 input[type="text"]:focus {
     border-color: #b2ffb2;
+}
+
+.suggestions {
+    position: absolute;
+    background: #222;
+    border: 1px solid #00ff00;
+    border-radius: 4px;
+    z-index: 10;
+    max-height: 240px;
+    overflow-y: auto;
+    width: 100%; /* Always match input width */
+    color: #00ff00;
+    font-family: inherit;
+    font-size: 1rem;
+    display: none;
+    left: 0;
+    top: 100%;
+    box-sizing: border-box;
+}
+
+.suggestion-item {
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    font-size: 1.05rem;
+}
+
+.suggestion-item:hover, .suggestion-item.active {
+    background: #00ff00;
+    color: #181818;
+}
+
+input[type="text"]#keyword {
+    flex: 1 1 220px;
 }
 
 select {
@@ -119,6 +165,7 @@ select {
     padding: 0.4rem 0.8rem;
     font-family: inherit;
     font-size: 1rem;
+    min-width: 90px;
 }
 
 button {
@@ -126,15 +173,17 @@ button {
     color: #181818;
     border: none;
     border-radius: 4px;
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.2rem;
     font-family: inherit;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin-left: 12px;
+    min-width: 110px;
 }
 
 button:hover {
@@ -211,13 +260,7 @@ button:hover {
 }
 
 /* --- Mobile Responsive Styles --- */
-@media (max-width: 600px) {
-    body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        overflow-x: hidden;
-    }
+@media (max-width: 700px) {
     .terminal-header,
     .terminal-footer {
         width: 100%;
@@ -263,12 +306,15 @@ button:hover {
         gap: 8px;
         padding: 0.75rem 0.5rem;
     }
-    .search-controls input,
-    .search-controls select,
-    .search-controls button {
+    .subreddit-autocomplete-container,
+    .suggestions,
+    input[type="text"]#subreddit,
+    input[type="text"]#keyword,
+    select,
+    button {
         width: 100%;
-        font-size: 1em;
-        margin: 0;
+        min-width: 0;
+        max-width: 100%;
     }
     .terminal-prompt,
     .blinking-cursor {
