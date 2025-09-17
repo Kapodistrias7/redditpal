@@ -25,9 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Subreddit Autocomplete ---
     let suggestionItems = [];
     let selectedSuggestion = -1;
+    let lastQuery = '';
 
     subredditInput.addEventListener('input', async function () {
         const query = subredditInput.value.trim();
+        lastQuery = query;
         suggestionsBox.innerHTML = '';
         selectedSuggestion = -1;
 
@@ -66,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     subredditInput.addEventListener('keydown', function (e) {
-        if (!suggestionItems.length) return;
+        if (!suggestionItems.length || suggestionsBox.style.display === 'none') return;
 
         if (e.key === 'ArrowDown') {
             selectedSuggestion = (selectedSuggestion + 1) % suggestionItems.length;
@@ -82,10 +84,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 suggestionsBox.style.display = 'none';
                 e.preventDefault();
             }
+        } else if (e.key === 'Escape') {
+            suggestionsBox.style.display = 'none';
         }
     });
 
-    document.addEventListener('click', function (e) {
+    document.addEventListener('mousedown', function (e) {
         if (!suggestionsBox.contains(e.target) && e.target !== subredditInput) {
             suggestionsBox.style.display = 'none';
         }
@@ -95,6 +99,10 @@ document.addEventListener('DOMContentLoaded', () => {
         suggestionItems.forEach((item, idx) => {
             item.classList.toggle('active', idx === selectedSuggestion);
         });
+        // Scroll into view if needed
+        if (selectedSuggestion >= 0 && suggestionItems[selectedSuggestion]) {
+            suggestionItems[selectedSuggestion].scrollIntoView({ block: 'nearest' });
+        }
     }
 
     // --- Search Logic ---
