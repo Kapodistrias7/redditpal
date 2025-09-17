@@ -25,16 +25,19 @@
             <h2 class="search-title"><i class="fas fa-search"></i> Find Project Ideas</h2>
             <form class="search-controls" id="searchForm" autocomplete="off">
                 <span class="terminal-prompt">$</span>
+                <div class="subreddit-autocomplete-container">
+                    <input type="text" id="subreddit" placeholder="Subreddit (e.g. javascript)" autocomplete="off" />
+                    <div id="subreddit-suggestions" class="suggestions"></div>
+                </div>
                 <input type="text" id="keyword" placeholder="Type a framework (e.g. React, Django)" />
                 <span class="blinking-cursor">|</span>
                 <select id="sort">
-    <option value="hot">Hot</option>
-    <option value="new">New</option>
-    <option value="top">Top</option>
-    <option value="rising">Rising</option>
-    <option value="relevance">Relevance (search)</option>
-</select>
-
+                    <option value="hot">Hot</option>
+                    <option value="new">New</option>
+                    <option value="top">Top</option>
+                    <option value="rising">Rising</option>
+                    <option value="relevance">Relevance (search)</option>
+                </select>
                 <button id="searchBtn" type="submit">
                     <i class="fas fa-search"></i> Search
                 </button>
