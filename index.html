@@ -270,6 +270,49 @@
       color: #7a9a7a;
     }
 
+    /* Ko-fi Floating Button */
+    .kofi-container {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      z-index: 1000;
+    }
+
+    .kofi-button {
+      background: #ff5722;
+      color: #0a0c0f;
+      border: 2px solid #ff7043;
+      padding: 0.75rem 1.3rem;
+      border-radius: 30px;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 87, 34, 0.35);
+      white-space: nowrap;
+    }
+
+    .kofi-button:hover {
+      background: #ff7043;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 87, 34, 0.5);
+    }
+
+    .kofi-button:active {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+    }
+
+    .kofi-button i {
+      font-size: 1.2rem;
+    }
+
+    /* Mobile optimization for Ko-fi button */
     @media (max-width: 600px) {
       .search-controls {
         flex-direction: column;
@@ -277,6 +320,20 @@
       }
       .container {
         padding: 1.5rem 0.8rem;
+      }
+      
+      .kofi-container {
+        bottom: 15px;
+        right: 15px;
+      }
+      
+      .kofi-button {
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+      }
+      
+      .kofi-button i {
+        font-size: 1rem;
       }
     }
   </style>
@@ -307,9 +364,7 @@
       </div>
       <div class="progress-text" id="progressText"></div>
       <div class="stats-row" id="statsRow" style="display:none;"></div>
-      <div class="search-hint">
-        <i class="fas fa-shield-alt"></i> client‑side filter · respects Reddit rate limits
-      </div>
+      
     </section>
 
     <div id="errorContainer"></div>
@@ -319,9 +374,14 @@
     <div id="results" class="results"></div>
   </main>
 
-  <footer class="terminal-footer">
-    <i class="far fa-copyright"></i> RedditPal · respects rate limits · production build v2.0
-  </footer>
+ 
+
+  <!-- Ko-fi Floating Support Button -->
+  <div class="kofi-container">
+    <a href="https://ko-fi.com/redditpal" target="_blank" rel="noopener" class="kofi-button" title="Support RedditPal on Ko-fi">
+      <i class="fas fa-mug-hot"></i> Buy me a coffee
+    </a>
+  </div>
 
   <script type="module">
     // ============================================================
@@ -731,6 +791,11 @@
       if (currentAbortController) {
         currentAbortController.abort();
       }
+    });
+
+    // Track Ko-fi clicks for analytics
+    document.querySelector('.kofi-button')?.addEventListener('click', function() {
+      console.log('☕ User clicked Ko-fi support button');
     });
 
     window.addEventListener('load', () => {
