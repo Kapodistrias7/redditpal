@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RedditPal - Find Programming Ideas from Reddit</title>
+    <title>RedditPal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4324023975911810"
-     crossorigin="anonymous"></script>
-
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4324023975911810"
+         crossorigin="anonymous"></script>
 </head>
 <body>
     <header class="terminal-header">
@@ -19,7 +18,7 @@
         </div>
         <div class="header-desc-container">
             <span class="header-desc">
-                Discover programming project ideas from top Reddit communities
+                Find project ideas from top Reddit communities
             </span>
         </div>
     </header>
@@ -35,21 +34,34 @@
                     <option value="new">New</option>
                     <option value="top">Top</option>
                     <option value="rising">Rising</option>
-                    <option value="relevance">Relevance (search)</option>
+                    <option value="relevance">Relevance</option>
+                </select>
+                <select id="time">
+                    <option value="hour">Hour</option>
+                    <option value="day" selected>Day</option>
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                    <option value="year">Year</option>
+                    <option value="all">All Time</option>
                 </select>
                 <button id="searchBtn" type="submit">
                     <i class="fas fa-search"></i> Search
                 </button>
             </form>
+            <div class="search-hint">
+                <small><i class="fas fa-info-circle"></i> 
+                Relevance requires keyword | RSS used for speed (no rate limits) | Time filters for Top [web:35]
+                </small>
+            </div>
         </section>
         <div class="loading" id="loading" style="display:none;">
-            <i class="fas fa-spinner fa-spin"></i> Searching Reddit for ideas...
+            <i class="fas fa-spinner fa-spin"></i> Searching across 19 programming subreddits...
         </div>
         <div class="results" id="results"></div>
     </main>
     <footer class="terminal-footer">
-        <p>RedditPal &copy; 2025 | Find inspiration for your next coding project</p>
+        <p>RedditPal &copy; 2026 | Reliable aggregation via RSS+JSON hybrid | <a href="https://reddit.com/r/programming" target="_blank">Explore more</a></p>
     </footer>
-    <script src="main.js"></script>
+    <script src="reddit-aggregator-v3.js"></script>
 </body>
 </html>
