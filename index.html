@@ -2,66 +2,118 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RedditPal</title>
+    <title>RedditPal - Programming Ideas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4324023975911810"
-         crossorigin="anonymous"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Courier New', monospace; background:#000; color:#00ff00; }
+        .terminal-header { background:#111; padding:1rem; text-align:center; }
+        .logo { color:#ff4500; text-decoration:none; font-size:1.5rem; }
+        .header-desc { font-size:0.9rem; opacity:0.8; }
+        .container { max-width:1000px; margin:0 auto; padding:2rem; }
+        .search-section { background:#111; padding:2rem; border-radius:8px; margin-bottom:2rem; }
+        .search-title { color:#ff4500; margin-bottom:1rem; }
+        .search-controls { display:flex; gap:1rem; flex-wrap:wrap; align-items:center; }
+        input, select, button { padding:0.8rem; background:#222; color:#00ff00; border:1px solid #444; border-radius:4px; font-family:inherit; }
+        button { background:#ff4500; color:#000; cursor:pointer; }
+        button:hover { background:#ff6600; }
+        .blinking-cursor { animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity:0; } }
+        .loading { text-align:center; padding:2rem; font-size:1.1rem; }
+        .result-item { border-bottom:1px solid #333; padding:1rem 0; }
+        .result-title { color:#00ff00; text-decoration:none; font-size:1.1rem; display:block; }
+        .result-title:hover { text-decoration:underline; }
+        .result-meta, .result-desc { color:#888; font-size:0.9rem; margin:0.3rem 0; }
+        .terminal-footer { text-align:center; padding:1rem; background:#111; opacity:0.7; }
+        .search-hint { margin-top:1rem; color:#888; }
+    </style>
 </head>
 <body>
     <header class="terminal-header">
-        <div class="logo-container">
-            <a href="index.html" class="logo">
-                <i class="fab fa-reddit"></i> <span>RedditPal</span>
-            </a>
-        </div>
-        <div class="header-desc-container">
-            <span class="header-desc">
-                Find project ideas from top Reddit communities
-            </span>
-        </div>
+        <a href="#" class="logo"><i class="fab fa-reddit"></i> RedditPal</a>
+        <div class="header-desc">Programming project ideas from Reddit</div>
     </header>
-    <main class="container terminal-window">
+    <main class="container">
         <section class="search-section">
-            <h2 class="search-title"><i class="fas fa-search"></i> Find Project Ideas</h2>
-            <form class="search-controls" id="searchForm" autocomplete="off">
-                <span class="terminal-prompt">$</span>
-                <input type="text" id="keyword" placeholder="Type a framework (e.g. React, Django)" />
-                <span class="blinking-cursor">|</span>
+            <h2 class="search-title"><i class="fas fa-search"></i> Find Ideas</h2>
+            <form class="search-controls" id="searchForm">
+                <input type="text" id="keyword" placeholder="React, Python, etc..." />
                 <select id="sort">
-                    <option value="hot">Hot</option>
-                    <option value="new">New</option>
-                    <option value="top">Top</option>
-                    <option value="rising">Rising</option>
-                    <option value="relevance">Relevance</option>
+                    <option value="hot">Hot 🔥</option>
+                    <option value="new">New ➡️</option>
+                    <option value="top">Top ⭐</option>
                 </select>
-                <select id="time">
-                    <option value="hour">Hour</option>
-                    <option value="day" selected>Day</option>
-                    <option value="week">Week</option>
-                    <option value="month">Month</option>
-                    <option value="year">Year</option>
-                    <option value="all">All Time</option>
-                </select>
-                <button id="searchBtn" type="submit">
-                    <i class="fas fa-search"></i> Search
-                </button>
+                <button type="submit"><i class="fas fa-search"></i> Search</button>
             </form>
             <div class="search-hint">
-                <small><i class="fas fa-info-circle"></i> 
-                Relevance requires keyword | RSS used for speed (no rate limits) | Time filters for Top [web:35]
-                </small>
+                <small><i class="fas fa-info"></i> Keyword filters titles client-side | Instant RSS from 19 subs</small>
             </div>
         </section>
         <div class="loading" id="loading" style="display:none;">
-            <i class="fas fa-spinner fa-spin"></i> Searching across 19 programming subreddits...
+            <i class="fas fa-spinner fa-spin"></i> Loading...
         </div>
         <div class="results" id="results"></div>
     </main>
     <footer class="terminal-footer">
-        <p>RedditPal &copy; 2026 | Reliable aggregation via RSS+JSON hybrid | <a href="https://reddit.com/r/programming" target="_blank">Explore more</a></p>
+        <p>RedditPal 2026 | Pure client-side | No API keys needed [web:35]</p>
     </footer>
-    <script src="reddit-aggregator-v3.js"></script>
+    <script>
+        const PROXY = 'https://api.allorigins.win/raw?url='; // CORS bypass [web:42]
+        const subreddits = ['programming','learnprogramming','webdev','coding','javascript','python','reactjs','cpp','java'];
+
+        let allPosts = [], keyword = '', sort = 'hot';
+
+        document.getElementById('searchForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            keyword = document.getElementById('keyword').value.toLowerCase();
+            sort = document.getElementById('sort').value;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').innerHTML = '';
+
+            allPosts = [];
+            for (let sub of subreddits) {
+                try {
+                    const url = `${PROXY}${encodeURIComponent(`https://reddit.com/r/${sub}/${sort}.rss`)}`;
+                    const res = await fetch(url);
+                    const text = await res.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/xml');
+                    const items = doc.querySelectorAll('item');
+                    items.forEach(item => {
+                        const title = item.querySelector('title')?.textContent || '';
+                        if (keyword && !title.toLowerCase().includes(keyword)) return;
+                        allPosts.push({
+                            title,
+                            url: item.querySelector('link')?.textContent || '',
+                            meta: `r/${sub} | ${new Date(item.querySelector('pubDate')?.textContent).toLocaleDateString()}`,
+                            desc: item.querySelector('description')?.textContent?.substring(0, 150) + '...'
+                        });
+                    });
+                } catch(e) { console.warn('Sub failed:', sub); }
+                await new Promise(r => setTimeout(r, 200)); // Gentle
+            }
+
+            // Sort & display
+            allPosts.sort((a,b) => sort === 'top' ? b.url.localeCompare(a.url) : 0); // Approx
+            render(allPosts.slice(0, 50));
+            document.getElementById('loading').style.display = 'none';
+        });
+
+        function render(posts) {
+            const results = document.getElementById('results');
+            if (!posts.length) {
+                results.innerHTML = '<div style="padding:2rem;color:#888;">No results. Try broader keywords!</div>';
+                return;
+            }
+            results.innerHTML = posts.map(p => `
+                <div class="result-item">
+                    <a href="${p.url}" class="result-title" target="_blank">${p.title}</a>
+                    <div class="result-meta">${p.meta}</div>
+                    <div class="result-desc">${p.desc}</div>
+                </div>
+            `).join('');
+        }
+    </script>
 </body>
 </html>
