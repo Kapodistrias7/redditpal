@@ -260,17 +260,6 @@
       margin-top: 2rem;
     }
 
-    .rate-note {
-      background: #1e2a1e;
-      padding: 0.25rem 0.8rem;
-      border-radius: 14px;
-      font-size: 0.7rem;
-      color: #b8d9b8;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
     .stats-row {
       display: flex;
       flex-wrap: wrap;
@@ -300,7 +289,7 @@
 
   <main class="container">
     <section class="search-section">
-      <h2 class="search-title"><i class="fas fa-code"></i> explore project sparks</h2>
+      <h2 class="search-title"> explore project sparks</h2>
       <form class="search-controls" id="searchForm">
         <input type="text" id="keyword" placeholder="e.g. React, CLI, algorithms..." autocomplete="off" />
         <select id="sort">
@@ -318,7 +307,9 @@
       </div>
       <div class="progress-text" id="progressText"></div>
       <div class="stats-row" id="statsRow" style="display:none;"></div>
-      
+      <div class="search-hint">
+        <i class="fas fa-shield-alt"></i> client‑side filter · respects Reddit rate limits
+      </div>
     </section>
 
     <div id="errorContainer"></div>
@@ -329,7 +320,7 @@
   </main>
 
   <footer class="terminal-footer">
-    <i class="far fa-copyright"></i> RedditPal
+    <i class="far fa-copyright"></i> RedditPal · respects rate limits · production build v2.0
   </footer>
 
   <script type="module">
@@ -375,10 +366,6 @@
     const progressBarFill = document.getElementById('progressBarFill');
     const progressText = document.getElementById('progressText');
     const statsRow = document.getElementById('statsRow');
-    const rateDisplay = document.getElementById('rateDisplay');
-
-    // Update rate display based on config
-    rateDisplay.textContent = `~${CONFIG.maxConcurrent} req/${(CONFIG.requestDelay / 1000).toFixed(1)}s`;
 
     // ---------- UTILITIES ----------
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -453,14 +440,12 @@
           timestamp: Date.now()
         }));
       } catch (e) {
-        // Storage full or unavailable – non-critical
         console.warn('sessionStorage write failed:', e.message);
       }
     }
 
     // ---------- RATE-LIMITED FETCH WITH RETRY BUDGET ----------
     async function rateLimitedFetch(url, sub, signal, retriesLeft = CONFIG.maxRetriesPerSub) {
-      // Check if aborted before making request
       if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
 
       const headers = new Headers({
@@ -496,14 +481,12 @@
 
     // ---------- FETCH SINGLE SUBREDDIT ----------
     async function fetchSubredditPosts(sub, sort, signal) {
-      // Check cache first
       const cached = getCachedPosts(sub, sort);
       if (cached) {
         console.log(`📦 cache hit: r/${sub} (${sort})`);
         return { sub, posts: cached, fromCache: true };
       }
 
-      // Build URL
       let sortPath;
       if (sort === 'top') {
         sortPath = 'top/.json?t=week&limit=25';
@@ -548,7 +531,6 @@
         });
       }
 
-      // Cache the result
       setCachedPosts(sub, sort, posts);
       console.log(`✅ r/${sub} → ${posts.length} posts`);
       return { sub, posts, fromCache: false };
@@ -561,7 +543,6 @@
       let completed = 0;
       let failed = 0;
 
-      // Create a promise queue with concurrency limit
       const queue = [...subreddits];
 
       async function worker() {
@@ -572,7 +553,6 @@
           if (!sub) break;
 
           try {
-            // Add small delay between requests to smooth rate limiting
             if (completed > 0) {
               await sleep(CONFIG.requestDelay);
             }
@@ -609,7 +589,6 @@
         }
       }
 
-      // Start concurrent workers
       const workers = Array(Math.min(CONFIG.maxConcurrent, total))
         .fill(null)
         .map(() => worker());
@@ -621,12 +600,10 @@
 
     // ---------- MAIN SEARCH FUNCTION ----------
     async function performSearch(keyword, sort) {
-      // Cancel any ongoing fetch
       if (currentAbortController) {
         currentAbortController.abort();
       }
 
-      // Create new abort controller
       currentAbortController = new AbortController();
       const signal = currentAbortController.signal;
 
@@ -657,10 +634,8 @@
           }
         );
 
-        // Collect all posts
         let allPosts = fetchResults.flatMap(r => r.posts);
 
-        // Client-side keyword filter
         if (keyword && keyword.trim() !== '') {
           const lowerKeyword = keyword.toLowerCase().trim();
           allPosts = allPosts.filter(post =>
@@ -670,20 +645,16 @@
           );
         }
 
-        // Sort
         if (sort === 'top') {
           allPosts.sort((a, b) => (b.score || 0) - (a.score || 0));
         } else if (sort === 'new') {
           allPosts.sort((a, b) => (b.created || 0) - (a.created || 0));
         }
-        // 'hot' keeps Reddit's natural ordering
 
         const displayPosts = allPosts.slice(0, CONFIG.postsLimit);
 
-        // Render
         renderPosts(displayPosts);
 
-        // Show stats
         const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
         statsRow.style.display = 'flex';
         statsRow.innerHTML = `
@@ -762,13 +733,10 @@
       }
     });
 
-    // Initial load
     window.addEventListener('load', () => {
-      // Auto-trigger initial search
       searchForm.dispatchEvent(new Event('submit'));
     });
 
-    // Cleanup on page unload
     window.addEventListener('beforeunload', () => {
       if (currentAbortController) {
         currentAbortController.abort();
