@@ -1,119 +1,784 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>RedditPal - Programming Ideas</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family: 'Courier New', monospace; background:#000; color:#00ff00; }
-        .terminal-header { background:#111; padding:1rem; text-align:center; }
-        .logo { color:#ff4500; text-decoration:none; font-size:1.5rem; }
-        .header-desc { font-size:0.9rem; opacity:0.8; }
-        .container { max-width:1000px; margin:0 auto; padding:2rem; }
-        .search-section { background:#111; padding:2rem; border-radius:8px; margin-bottom:2rem; }
-        .search-title { color:#ff4500; margin-bottom:1rem; }
-        .search-controls { display:flex; gap:1rem; flex-wrap:wrap; align-items:center; }
-        input, select, button { padding:0.8rem; background:#222; color:#00ff00; border:1px solid #444; border-radius:4px; font-family:inherit; }
-        button { background:#ff4500; color:#000; cursor:pointer; }
-        button:hover { background:#ff6600; }
-        .blinking-cursor { animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity:0; } }
-        .loading { text-align:center; padding:2rem; font-size:1.1rem; }
-        .result-item { border-bottom:1px solid #333; padding:1rem 0; }
-        .result-title { color:#00ff00; text-decoration:none; font-size:1.1rem; display:block; }
-        .result-title:hover { text-decoration:underline; }
-        .result-meta, .result-desc { color:#888; font-size:0.9rem; margin:0.3rem 0; }
-        .terminal-footer { text-align:center; padding:1rem; background:#111; opacity:0.7; }
-        .search-hint { margin-top:1rem; color:#888; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>RedditPal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0c0f;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      color: #b3ffcf;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .terminal-header {
+      background: #12151a;
+      border-bottom: 1px solid #2a3a2a;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 255, 0, 0.08);
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ff5722;
+      text-decoration: none;
+      letter-spacing: 1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo i {
+      font-size: 2rem;
+    }
+
+    .header-desc {
+      color: #7aa87a;
+      margin-top: 0.3rem;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      flex: 1;
+      width: 100%;
+    }
+
+    .search-section {
+      background: #11171c;
+      border: 1px solid #2e4a2e;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .search-title {
+      color: #ff7043;
+      margin-bottom: 1.4rem;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .search-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    input,
+    select,
+    button {
+      background: #1a1f24;
+      color: #d4ffd4;
+      border: 1px solid #3a543a;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #ff7043;
+      box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.4);
+    }
+
+    button {
+      background: #ff5722;
+      color: #0a0c0f;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.2s, transform 0.1s, opacity 0.2s;
+      letter-spacing: 0.5px;
+    }
+
+    button:hover:not(:disabled) {
+      background: #ff7043;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .search-hint {
+      margin-top: 1.2rem;
+      color: #6f8f6f;
+      font-size: 0.8rem;
+      background: #1a1f1a;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      display: inline-block;
+    }
+
+    .progress-bar-container {
+      margin-top: 1rem;
+      background: #1a1f1a;
+      border-radius: 20px;
+      height: 8px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff5722, #ffab40);
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 20px;
+    }
+
+    .progress-text {
+      font-size: 0.75rem;
+      color: #8faf8f;
+      margin-top: 0.3rem;
+      display: none;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2.5rem;
+      font-size: 1.1rem;
+      color: #b3ffb3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .result-item {
+      background: #10161b;
+      border: 1px solid #253525;
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 0.8rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .result-item:hover {
+      border-color: #4f7a4f;
+      background: #141e18;
+    }
+
+    .result-title {
+      color: #a0e9a0;
+      font-size: 1.1rem;
+      text-decoration: none;
+      font-weight: 600;
+      display: block;
+      word-break: break-word;
+    }
+
+    .result-title:hover {
+      color: #ffb27f;
+      text-decoration: underline;
+    }
+
+    .result-meta {
+      color: #778b77;
+      font-size: 0.8rem;
+      margin: 0.4rem 0 0.3rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .result-desc {
+      color: #9bb59b;
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+      line-height: 1.4;
+    }
+
+    .error-banner {
+      background: #2a1515;
+      border: 1px solid #5a2a2a;
+      color: #ffab91;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .error-banner i {
+      color: #ff7043;
+    }
+
+    .error-banner button {
+      margin-left: auto;
+      background: #3a2020;
+      border: 1px solid #5a3a3a;
+      color: #ffccbc;
+      font-size: 0.8rem;
+      padding: 0.4rem 0.8rem;
+    }
+
+    .terminal-footer {
+      background: #0d1114;
+      text-align: center;
+      padding: 1.2rem;
+      color: #5b7a5b;
+      border-top: 1px solid #223322;
+      font-size: 0.8rem;
+      margin-top: 2rem;
+    }
+
+    .rate-note {
+      background: #1e2a1e;
+      padding: 0.25rem 0.8rem;
+      border-radius: 14px;
+      font-size: 0.7rem;
+      color: #b8d9b8;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 0.8rem;
+      font-size: 0.8rem;
+      color: #7a9a7a;
+    }
+
+    @media (max-width: 600px) {
+      .search-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .container {
+        padding: 1.5rem 0.8rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <header class="terminal-header">
-        <a href="#" class="logo"><i class="fab fa-reddit"></i> RedditPal</a>
-        <div class="header-desc">Programming project ideas from Reddit</div>
-    </header>
-    <main class="container">
-        <section class="search-section">
-            <h2 class="search-title"><i class="fas fa-search"></i> Find Ideas</h2>
-            <form class="search-controls" id="searchForm">
-                <input type="text" id="keyword" placeholder="React, Python, etc..." />
-                <select id="sort">
-                    <option value="hot">Hot 🔥</option>
-                    <option value="new">New ➡️</option>
-                    <option value="top">Top ⭐</option>
-                </select>
-                <button type="submit"><i class="fas fa-search"></i> Search</button>
-            </form>
-            <div class="search-hint">
-                <small><i class="fas fa-info"></i> Keyword filters titles client-side | Instant RSS from 19 subs</small>
-            </div>
-        </section>
-        <div class="loading" id="loading" style="display:none;">
-            <i class="fas fa-spinner fa-spin"></i> Loading...
-        </div>
-        <div class="results" id="results"></div>
-    </main>
-    <footer class="terminal-footer">
-        <p>RedditPal 2026 | Pure client-side | No API keys needed [web:35]</p>
-    </footer>
-    <script>
-        const PROXY = 'https://api.allorigins.win/raw?url='; // CORS bypass [web:42]
-        const subreddits = ['programming','learnprogramming','webdev','coding','javascript','python','reactjs','cpp','java'];
+  <header class="terminal-header">
+    <a href="#" class="logo"><i class="fab fa-reddit-alien"></i> RedditPal</a>
+    <div class="header-desc">curated programming ideas</div>
+  </header>
 
-        let allPosts = [], keyword = '', sort = 'hot';
+  <main class="container">
+    <section class="search-section">
+      <h2 class="search-title"><i class="fas fa-code"></i> explore project sparks</h2>
+      <form class="search-controls" id="searchForm">
+        <input type="text" id="keyword" placeholder="e.g. React, CLI, algorithms..." autocomplete="off" />
+        <select id="sort">
+          <option value="hot">🔥 hot</option>
+          <option value="new">🆕 new</option>
+          <option value="top">⭐ top (week)</option>
+        </select>
+        <button type="submit" id="searchButton"><i class="fas fa-search"></i> fetch ideas</button>
+        <button type="button" id="cancelButton" style="display:none; background:#333;" title="Cancel ongoing fetch">
+          <i class="fas fa-stop"></i> cancel
+        </button>
+      </form>
+      <div class="progress-bar-container" id="progressBarContainer">
+        <div class="progress-bar-fill" id="progressBarFill"></div>
+      </div>
+      <div class="progress-text" id="progressText"></div>
+      <div class="stats-row" id="statsRow" style="display:none;"></div>
+      <div class="search-hint">
+        <i class="fas fa-shield-alt"></i> official JSON API · concurrent fetches · persistent cache
+        <span class="rate-note"><i class="far fa-clock"></i> <span id="rateDisplay">~3 req/sec</span></span>
+      </div>
+    </section>
 
-        document.getElementById('searchForm').addEventListener('submit', async e => {
-            e.preventDefault();
-            keyword = document.getElementById('keyword').value.toLowerCase();
-            sort = document.getElementById('sort').value;
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('results').innerHTML = '';
+    <div id="errorContainer"></div>
+    <div id="loading" class="loading" style="display: none;">
+      <i class="fas fa-spinner fa-pulse"></i> <span id="loadingText">scanning subreddits...</span>
+    </div>
+    <div id="results" class="results"></div>
+  </main>
 
-            allPosts = [];
-            for (let sub of subreddits) {
-                try {
-                    const url = `${PROXY}${encodeURIComponent(`https://reddit.com/r/${sub}/${sort}.rss`)}`;
-                    const res = await fetch(url);
-                    const text = await res.text();
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(text, 'text/xml');
-                    const items = doc.querySelectorAll('item');
-                    items.forEach(item => {
-                        const title = item.querySelector('title')?.textContent || '';
-                        if (keyword && !title.toLowerCase().includes(keyword)) return;
-                        allPosts.push({
-                            title,
-                            url: item.querySelector('link')?.textContent || '',
-                            meta: `r/${sub} | ${new Date(item.querySelector('pubDate')?.textContent).toLocaleDateString()}`,
-                            desc: item.querySelector('description')?.textContent?.substring(0, 150) + '...'
-                        });
-                    });
-                } catch(e) { console.warn('Sub failed:', sub); }
-                await new Promise(r => setTimeout(r, 200)); // Gentle
-            }
+  <footer class="terminal-footer">
+    <i class="far fa-copyright"></i> RedditPal
+  </footer>
 
-            // Sort & display
-            allPosts.sort((a,b) => sort === 'top' ? b.url.localeCompare(a.url) : 0); // Approx
-            render(allPosts.slice(0, 50));
-            document.getElementById('loading').style.display = 'none';
+  <script type="module">
+    // ============================================================
+    // RedditPal v2.0 – Production-Ready Reddit Idea Aggregator
+    // Features: AbortController, concurrent requests, persistent
+    // cache (sessionStorage), retry budget, progress tracking,
+    // error boundaries, and graceful degradation.
+    // ============================================================
+
+    // ---------- CONFIGURATION ----------
+    const CONFIG = {
+      subreddits: [
+        'programming', 'learnprogramming', 'webdev', 'coding',
+        'javascript', 'python', 'reactjs', 'cpp', 'java',
+        'typescript', 'golang', 'rust', 'machinelearning', 'datascience',
+        'androiddev', 'iosprogramming', 'gamedev', 'opensource', 'devops'
+      ],
+      maxConcurrent: 3,          // Fetch up to 3 subs simultaneously
+      requestDelay: 350,         // ms between individual requests (within concurrent group)
+      cacheTTL: 5 * 60 * 1000,   // 5 minutes cache validity
+      maxRetriesPerSub: 2,       // Retry budget per subreddit
+      retryDelay: 2000,          // Wait before retry after 429
+      storagePrefix: 'redditpal_',
+      postsLimit: 60             // Max posts to display
+    };
+
+    // ---------- STATE ----------
+    let currentAbortController = null;
+    let isFetching = false;
+
+    // ---------- DOM ELEMENTS ----------
+    const searchForm = document.getElementById('searchForm');
+    const keywordInput = document.getElementById('keyword');
+    const sortSelect = document.getElementById('sort');
+    const searchButton = document.getElementById('searchButton');
+    const cancelButton = document.getElementById('cancelButton');
+    const loadingDiv = document.getElementById('loading');
+    const loadingText = document.getElementById('loadingText');
+    const resultsDiv = document.getElementById('results');
+    const errorContainer = document.getElementById('errorContainer');
+    const progressBarContainer = document.getElementById('progressBarContainer');
+    const progressBarFill = document.getElementById('progressBarFill');
+    const progressText = document.getElementById('progressText');
+    const statsRow = document.getElementById('statsRow');
+    const rateDisplay = document.getElementById('rateDisplay');
+
+    // Update rate display based on config
+    rateDisplay.textContent = `~${CONFIG.maxConcurrent} req/${(CONFIG.requestDelay / 1000).toFixed(1)}s`;
+
+    // ---------- UTILITIES ----------
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function setFetchingState(fetching) {
+      isFetching = fetching;
+      searchButton.disabled = fetching;
+      cancelButton.style.display = fetching ? 'inline-flex' : 'none';
+      if (!fetching) {
+        progressBarContainer.style.display = 'none';
+        progressText.style.display = 'none';
+      }
+    }
+
+    function showError(message, retryCallback = null) {
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-banner';
+      errorDiv.innerHTML = `
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>${escapeHtml(message)}</span>
+        ${retryCallback ? '<button id="retryButton"><i class="fas fa-redo"></i> retry</button>' : ''}
+      `;
+      errorContainer.innerHTML = '';
+      errorContainer.appendChild(errorDiv);
+
+      if (retryCallback) {
+        document.getElementById('retryButton')?.addEventListener('click', () => {
+          errorContainer.innerHTML = '';
+          retryCallback();
         });
+      }
+    }
 
-        function render(posts) {
-            const results = document.getElementById('results');
-            if (!posts.length) {
-                results.innerHTML = '<div style="padding:2rem;color:#888;">No results. Try broader keywords!</div>';
-                return;
-            }
-            results.innerHTML = posts.map(p => `
-                <div class="result-item">
-                    <a href="${p.url}" class="result-title" target="_blank">${p.title}</a>
-                    <div class="result-meta">${p.meta}</div>
-                    <div class="result-desc">${p.desc}</div>
-                </div>
-            `).join('');
+    function clearError() {
+      errorContainer.innerHTML = '';
+    }
+
+    // ---------- PERSISTENT CACHE (sessionStorage) ----------
+    function getCacheKey(sub, sort) {
+      return `${CONFIG.storagePrefix}${sub}_${sort}`;
+    }
+
+    function getCachedPosts(sub, sort) {
+      try {
+        const raw = sessionStorage.getItem(getCacheKey(sub, sort));
+        if (!raw) return null;
+        const cached = JSON.parse(raw);
+        if (Date.now() - cached.timestamp < CONFIG.cacheTTL) {
+          return cached.data;
         }
-    </script>
+        sessionStorage.removeItem(getCacheKey(sub, sort));
+        return null;
+      } catch {
+        return null;
+      }
+    }
+
+    function setCachedPosts(sub, sort, posts) {
+      try {
+        sessionStorage.setItem(getCacheKey(sub, sort), JSON.stringify({
+          data: posts,
+          timestamp: Date.now()
+        }));
+      } catch (e) {
+        // Storage full or unavailable – non-critical
+        console.warn('sessionStorage write failed:', e.message);
+      }
+    }
+
+    // ---------- RATE-LIMITED FETCH WITH RETRY BUDGET ----------
+    async function rateLimitedFetch(url, sub, signal, retriesLeft = CONFIG.maxRetriesPerSub) {
+      // Check if aborted before making request
+      if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+
+      const headers = new Headers({
+        'User-Agent': 'RedditPal:production:v2.0 (by /u/redditpal_dev)',
+        'Accept': 'application/json',
+      });
+
+      try {
+        const response = await fetch(url, { headers, signal });
+
+        if (response.status === 429 && retriesLeft > 0) {
+          console.warn(`⚠️ rate limited on r/${sub}, retrying in ${CONFIG.retryDelay}ms (${retriesLeft} left)`);
+          await sleep(CONFIG.retryDelay);
+          if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+          return rateLimitedFetch(url, sub, signal, retriesLeft - 1);
+        }
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        return response.json();
+      } catch (err) {
+        if (err.name === 'AbortError') throw err;
+        if (retriesLeft > 0 && err.message.includes('429')) {
+          await sleep(CONFIG.retryDelay);
+          if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+          return rateLimitedFetch(url, sub, signal, retriesLeft - 1);
+        }
+        throw err;
+      }
+    }
+
+    // ---------- FETCH SINGLE SUBREDDIT ----------
+    async function fetchSubredditPosts(sub, sort, signal) {
+      // Check cache first
+      const cached = getCachedPosts(sub, sort);
+      if (cached) {
+        console.log(`📦 cache hit: r/${sub} (${sort})`);
+        return { sub, posts: cached, fromCache: true };
+      }
+
+      // Build URL
+      let sortPath;
+      if (sort === 'top') {
+        sortPath = 'top/.json?t=week&limit=25';
+      } else if (sort === 'new') {
+        sortPath = 'new/.json?limit=25';
+      } else {
+        sortPath = 'hot/.json?limit=25';
+      }
+
+      const url = `https://www.reddit.com/r/${sub}/${sortPath}&raw_json=1`;
+
+      console.log(`🔍 fetching r/${sub} (${sort})`);
+      const json = await rateLimitedFetch(url, sub, signal);
+
+      const posts = [];
+      const children = json?.data?.children || [];
+
+      for (const child of children) {
+        const data = child?.data;
+        if (!data) continue;
+
+        const title = data.title || '';
+        const permalink = data.permalink ? `https://reddit.com${data.permalink}` : '';
+        const postUrl = permalink || data.url || '';
+        const created = data.created_utc ? new Date(data.created_utc * 1000) : null;
+        const dateStr = created
+          ? created.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : '';
+        const score = data.score ?? 0;
+        const numComments = data.num_comments ?? 0;
+        const selftext = (data.selftext || '').substring(0, 180);
+        const desc = selftext || data.url || '';
+
+        posts.push({
+          title,
+          url: postUrl,
+          meta: `r/${sub} • ${dateStr} • ⬆${score} 💬${numComments}`,
+          desc: desc.length > 160 ? desc.slice(0, 157) + '…' : desc || '▪️ link / discussion',
+          subreddit: sub,
+          created: created?.getTime() || 0,
+          score
+        });
+      }
+
+      // Cache the result
+      setCachedPosts(sub, sort, posts);
+      console.log(`✅ r/${sub} → ${posts.length} posts`);
+      return { sub, posts, fromCache: false };
+    }
+
+    // ---------- CONCURRENT FETCH WITH THROTTLE ----------
+    async function fetchAllSubredditsWithConcurrency(subreddits, sort, signal, onProgress) {
+      const results = [];
+      const total = subreddits.length;
+      let completed = 0;
+      let failed = 0;
+
+      // Create a promise queue with concurrency limit
+      const queue = [...subreddits];
+
+      async function worker() {
+        while (queue.length > 0) {
+          if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+
+          const sub = queue.shift();
+          if (!sub) break;
+
+          try {
+            // Add small delay between requests to smooth rate limiting
+            if (completed > 0) {
+              await sleep(CONFIG.requestDelay);
+            }
+            if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+
+            const result = await fetchSubredditPosts(sub, sort, signal);
+            results.push(result);
+            completed++;
+            failed += result.fromCache ? 0 : (result.posts.length === 0 && !result.fromCache ? 1 : 0);
+
+            if (onProgress) {
+              onProgress({
+                completed,
+                total,
+                currentSub: sub,
+                fromCache: result.fromCache,
+                postCount: result.posts.length
+              });
+            }
+          } catch (err) {
+            if (err.name === 'AbortError') throw err;
+            console.error(`❌ failed r/${sub}: ${err.message}`);
+            completed++;
+            failed++;
+            if (onProgress) {
+              onProgress({
+                completed,
+                total,
+                currentSub: sub,
+                error: err.message
+              });
+            }
+          }
+        }
+      }
+
+      // Start concurrent workers
+      const workers = Array(Math.min(CONFIG.maxConcurrent, total))
+        .fill(null)
+        .map(() => worker());
+
+      await Promise.all(workers);
+
+      return { results, stats: { total, completed, failed } };
+    }
+
+    // ---------- MAIN SEARCH FUNCTION ----------
+    async function performSearch(keyword, sort) {
+      // Cancel any ongoing fetch
+      if (currentAbortController) {
+        currentAbortController.abort();
+      }
+
+      // Create new abort controller
+      currentAbortController = new AbortController();
+      const signal = currentAbortController.signal;
+
+      setFetchingState(true);
+      clearError();
+      loadingDiv.style.display = 'flex';
+      loadingText.textContent = 'initializing search...';
+      resultsDiv.innerHTML = '';
+      progressBarContainer.style.display = 'block';
+      progressText.style.display = 'block';
+      progressBarFill.style.width = '0%';
+      statsRow.style.display = 'none';
+
+      const startTime = performance.now();
+
+      try {
+        const { results: fetchResults, stats } = await fetchAllSubredditsWithConcurrency(
+          CONFIG.subreddits,
+          sort,
+          signal,
+          (progress) => {
+            const pct = Math.round((progress.completed / progress.total) * 100);
+            progressBarFill.style.width = `${pct}%`;
+            const cacheTag = progress.fromCache ? ' (cached)' : '';
+            const errorTag = progress.error ? ' ⚠️' : '';
+            progressText.textContent = `${progress.completed}/${progress.total} subreddits · r/${progress.currentSub}${cacheTag}${errorTag}`;
+            loadingText.textContent = `scanning subreddits... (${progress.completed}/${progress.total})`;
+          }
+        );
+
+        // Collect all posts
+        let allPosts = fetchResults.flatMap(r => r.posts);
+
+        // Client-side keyword filter
+        if (keyword && keyword.trim() !== '') {
+          const lowerKeyword = keyword.toLowerCase().trim();
+          allPosts = allPosts.filter(post =>
+            post.title.toLowerCase().includes(lowerKeyword) ||
+            post.desc.toLowerCase().includes(lowerKeyword) ||
+            post.subreddit.toLowerCase().includes(lowerKeyword)
+          );
+        }
+
+        // Sort
+        if (sort === 'top') {
+          allPosts.sort((a, b) => (b.score || 0) - (a.score || 0));
+        } else if (sort === 'new') {
+          allPosts.sort((a, b) => (b.created || 0) - (a.created || 0));
+        }
+        // 'hot' keeps Reddit's natural ordering
+
+        const displayPosts = allPosts.slice(0, CONFIG.postsLimit);
+
+        // Render
+        renderPosts(displayPosts);
+
+        // Show stats
+        const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+        statsRow.style.display = 'flex';
+        statsRow.innerHTML = `
+          <span><i class="fas fa-check-circle"></i> ${displayPosts.length} ideas found</span>
+          <span><i class="fas fa-database"></i> ${stats.total} subs scanned</span>
+          <span><i class="far fa-clock"></i> ${elapsed}s</span>
+          ${stats.failed > 0 ? `<span style="color:#ffab91;"><i class="fas fa-exclamation-circle"></i> ${stats.failed} failed</span>` : ''}
+        `;
+
+        if (displayPosts.length === 0 && allPosts.length === 0) {
+          showError('No posts found. The subreddits may be empty or unavailable.', () => performSearch(keyword, sort));
+        } else if (displayPosts.length === 0) {
+          resultsDiv.innerHTML = `
+            <div style="padding:2.5rem;text-align:center;color:#7f9f7f;background:#0f1610;border-radius:12px;">
+              <i class="fas fa-search" style="font-size:2rem;opacity:0.5;"></i>
+              <p style="margin-top:0.8rem;">no ideas match "${escapeHtml(keyword)}" — try broader terms</p>
+            </div>`;
+        }
+
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          console.log('🛑 fetch aborted by user');
+          resultsDiv.innerHTML = `
+            <div style="padding:2rem;text-align:center;color:#8faf8f;">
+              <i class="fas fa-stop-circle"></i> search cancelled
+            </div>`;
+        } else {
+          console.error('Search failed:', err);
+          showError(`Search failed: ${err.message}. Check console for details.`, () => performSearch(keyword, sort));
+          resultsDiv.innerHTML = '';
+        }
+      } finally {
+        setFetchingState(false);
+        loadingDiv.style.display = 'none';
+        progressBarContainer.style.display = 'none';
+        progressText.style.display = 'none';
+        if (currentAbortController?.signal === signal) {
+          currentAbortController = null;
+        }
+      }
+    }
+
+    // ---------- RENDER ----------
+    function renderPosts(posts) {
+      if (!posts || posts.length === 0) {
+        resultsDiv.innerHTML = '';
+        return;
+      }
+
+      const html = posts.map(post => `
+        <div class="result-item">
+          <a href="${escapeHtml(post.url)}" target="_blank" rel="noopener noreferrer" class="result-title">
+            <i class="fas fa-lightbulb" style="color:#ffab40;margin-right:0.4rem;"></i>${escapeHtml(post.title)}
+          </a>
+          <div class="result-meta">
+            <span><i class="fas fa-reddit-alien"></i> ${escapeHtml(post.meta)}</span>
+          </div>
+          <div class="result-desc">${escapeHtml(post.desc)}</div>
+        </div>
+      `).join('');
+
+      resultsDiv.innerHTML = html;
+    }
+
+    // ---------- EVENT LISTENERS ----------
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const keyword = keywordInput.value.trim();
+      const sort = sortSelect.value;
+      performSearch(keyword, sort);
+    });
+
+    cancelButton.addEventListener('click', () => {
+      if (currentAbortController) {
+        currentAbortController.abort();
+      }
+    });
+
+    // Initial load
+    window.addEventListener('load', () => {
+      // Auto-trigger initial search
+      searchForm.dispatchEvent(new Event('submit'));
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (currentAbortController) {
+        currentAbortController.abort();
+      }
+    });
+
+    console.log('🤖 RedditPal v2.0 ready — concurrent fetches, persistent cache, abort support');
+  </script>
 </body>
 </html>
