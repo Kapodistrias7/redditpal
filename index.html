@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
   <title>RedditPal</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -20,6 +20,8 @@
       flex-direction: column;
       min-height: 100vh;
       line-height: 1.5;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
     }
 
     .terminal-header {
@@ -39,6 +41,8 @@
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .logo i {
@@ -76,6 +80,7 @@
       display: flex;
       align-items: center;
       gap: 0.6rem;
+      flex-wrap: wrap;
     }
 
     .search-controls {
@@ -97,6 +102,8 @@
       font-size: 0.95rem;
       outline: none;
       transition: all 0.2s;
+      -webkit-appearance: none;
+      -moz-appearance: none;
     }
 
     input:focus,
@@ -116,6 +123,7 @@
       gap: 0.4rem;
       transition: background 0.2s, transform 0.1s, opacity 0.2s;
       letter-spacing: 0.5px;
+      white-space: nowrap;
     }
 
     button:hover:not(:disabled) {
@@ -137,6 +145,7 @@
       padding: 0.5rem 1rem;
       border-radius: 20px;
       display: inline-block;
+      word-break: break-word;
     }
 
     .progress-bar-container {
@@ -161,6 +170,7 @@
       color: #8faf8f;
       margin-top: 0.3rem;
       display: none;
+      word-break: break-word;
     }
 
     .loading {
@@ -172,6 +182,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.6rem;
+      flex-wrap: wrap;
     }
 
     .results {
@@ -187,6 +198,12 @@
       padding: 1.2rem 1.5rem;
       margin-bottom: 0.8rem;
       transition: border-color 0.2s, background 0.2s;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
+      -webkit-hyphens: auto;
+      -ms-hyphens: auto;
+      hyphens: auto;
     }
 
     .result-item:hover {
@@ -200,7 +217,13 @@
       text-decoration: none;
       font-weight: 600;
       display: block;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
       word-break: break-word;
+      -webkit-hyphens: auto;
+      -ms-hyphens: auto;
+      hyphens: auto;
+      max-width: 100%;
     }
 
     .result-title:hover {
@@ -216,6 +239,9 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 0.8rem;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
     }
 
     .result-desc {
@@ -223,6 +249,13 @@
       font-size: 0.9rem;
       margin-top: 0.3rem;
       line-height: 1.4;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
+      -webkit-hyphens: auto;
+      -ms-hyphens: auto;
+      hyphens: auto;
+      max-width: 100%;
     }
 
     .error-banner {
@@ -235,10 +268,13 @@
       display: flex;
       align-items: center;
       gap: 0.6rem;
+      flex-wrap: wrap;
+      word-break: break-word;
     }
 
     .error-banner i {
       color: #ff7043;
+      flex-shrink: 0;
     }
 
     .error-banner button {
@@ -248,6 +284,7 @@
       color: #ffccbc;
       font-size: 0.8rem;
       padding: 0.4rem 0.8rem;
+      flex-shrink: 0;
     }
 
     .terminal-footer {
@@ -258,6 +295,7 @@
       border-top: 1px solid #223322;
       font-size: 0.8rem;
       margin-top: 2rem;
+      word-break: break-word;
     }
 
     .stats-row {
@@ -268,6 +306,13 @@
       margin-top: 0.8rem;
       font-size: 0.8rem;
       color: #7a9a7a;
+    }
+
+    .stats-row span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-wrap: wrap;
     }
 
     /* Ko-fi Floating Button */
@@ -295,6 +340,9 @@
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(255, 87, 34, 0.35);
       white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      user-select: none;
     }
 
     .kofi-button:hover {
@@ -312,28 +360,191 @@
       font-size: 1.2rem;
     }
 
-    /* Mobile optimization for Ko-fi button */
-    @media (max-width: 600px) {
+    /* Tablet and Mobile Optimizations */
+    @media (max-width: 768px) {
+      .terminal-header {
+        padding: 1.2rem 0.8rem;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+      }
+
+      .logo i {
+        font-size: 1.5rem;
+      }
+
+      .container {
+        padding: 1.5rem 1rem;
+      }
+
+      .search-section {
+        padding: 1.5rem 1rem;
+        border-radius: 12px;
+      }
+
       .search-controls {
         flex-direction: column;
         align-items: stretch;
       }
-      .container {
-        padding: 1.5rem 0.8rem;
+
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        font-size: 1rem;
       }
-      
+
+      .result-item {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+
+      .result-title {
+        font-size: 1rem;
+      }
+
+      .result-desc {
+        font-size: 0.85rem;
+      }
+
       .kofi-container {
         bottom: 15px;
         right: 15px;
       }
-      
+
       .kofi-button {
         padding: 0.6rem 1rem;
         font-size: 0.8rem;
       }
-      
+
       .kofi-button i {
         font-size: 1rem;
+      }
+    }
+
+    /* Small Mobile Phones */
+    @media (max-width: 480px) {
+      .terminal-header {
+        padding: 1rem 0.5rem;
+      }
+
+      .logo {
+        font-size: 1.3rem;
+        gap: 0.3rem;
+      }
+
+      .logo i {
+        font-size: 1.3rem;
+      }
+
+      .header-desc {
+        font-size: 0.75rem;
+      }
+
+      .container {
+        padding: 1rem 0.6rem;
+      }
+
+      .search-section {
+        padding: 1rem 0.8rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+      }
+
+      .search-title {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+
+      input,
+      select,
+      button {
+        padding: 0.8rem 0.9rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+      }
+
+      .search-hint {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.8rem;
+        margin-top: 0.8rem;
+      }
+
+      .result-item {
+        padding: 0.9rem;
+        margin-bottom: 0.6rem;
+        border-radius: 8px;
+      }
+
+      .result-title {
+        font-size: 0.9rem;
+      }
+
+      .result-meta {
+        font-size: 0.7rem;
+        gap: 0.4rem;
+      }
+
+      .result-desc {
+        font-size: 0.8rem;
+      }
+
+      .stats-row {
+        font-size: 0.7rem;
+        gap: 0.5rem;
+      }
+
+      .loading {
+        padding: 1.5rem;
+        font-size: 0.9rem;
+      }
+
+      .error-banner {
+        padding: 0.8rem 1rem;
+        font-size: 0.85rem;
+      }
+
+      .kofi-container {
+        bottom: 10px;
+        right: 10px;
+      }
+
+      .kofi-button {
+        padding: 0.5rem 0.9rem;
+        font-size: 0.75rem;
+        border-radius: 25px;
+      }
+
+      .kofi-button i {
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Very Small Screens (320px and below) */
+    @media (max-width: 360px) {
+      .logo {
+        font-size: 1.1rem;
+      }
+
+      .result-item {
+        padding: 0.7rem;
+      }
+
+      .result-title {
+        font-size: 0.85rem;
+      }
+
+      .kofi-button {
+        padding: 0.6rem 0.7rem;
+        font-size: 0.7rem;
+        gap: 0rem;
+      }
+
+      .kofi-button i {
+        font-size: 1.1rem;
+        margin: 0;
       }
     }
   </style>
@@ -374,21 +585,19 @@
     <div id="results" class="results"></div>
   </main>
 
- 
-
   <!-- Ko-fi Floating Support Button -->
   <div class="kofi-container">
     <a href="https://ko-fi.com/redditpal" target="_blank" rel="noopener" class="kofi-button" title="Support RedditPal on Ko-fi">
-      <i class="fas fa-mug-hot"></i> Buy me a coffee
+      <i class="fas fa-mug-hot"></i> <span>Buy me a coffee</span>
     </a>
   </div>
 
   <script type="module">
     // ============================================================
-    // RedditPal v2.0 – Production-Ready Reddit Idea Aggregator
+    // RedditPal v2.1 – Mobile-Optimized Production Build
     // Features: AbortController, concurrent requests, persistent
     // cache (sessionStorage), retry budget, progress tracking,
-    // error boundaries, and graceful degradation.
+    // error boundaries, word-break protection, responsive design.
     // ============================================================
 
     // ---------- CONFIGURATION ----------
@@ -509,7 +718,7 @@
       if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
 
       const headers = new Headers({
-        'User-Agent': 'RedditPal:production:v2.0 (by /u/redditpal_dev)',
+        'User-Agent': 'RedditPal:production:v2.1 (by /u/redditpal_dev)',
         'Accept': 'application/json',
       });
 
@@ -808,7 +1017,7 @@
       }
     });
 
-    console.log('🤖 RedditPal v2.0 ready — concurrent fetches, persistent cache, abort support');
+    console.log('🤖 RedditPal v2.1 ready — mobile-optimized, concurrent fetches, persistent cache');
   </script>
 </body>
 </html>
