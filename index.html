@@ -1,245 +1,151 @@
 <!DOCTYPE html>
+
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedditPal | Curated Programming Feed</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        reddit: '#FF4500',
-                        darkbg: '#0B0D10',
-                        cardbg: '#15181E'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    }
+    <title>RedditPal</title>
+
+```
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: {
+            extend: {
+                colors: {
+                    reddit: '#FF4500',
+                    darkbg: '#0B0D10',
+                    cardbg: '#15181E'
                 }
             }
         }
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        .bg-grid {
-            background-size: 40px 40px;
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        font-family: Inter, system-ui, sans-serif;
+    }
+
+    .bg-grid {
+        background-size: 40px 40px;
+        background-image:
+            linear-gradient(to right, rgba(255,255,255,.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,.03) 1px, transparent 1px);
+    }
+
+    .glow-text {
+        background: linear-gradient(to right,#FF4500,#FF8C00);
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+    }
+
+    .card-hover:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255,69,0,.3);
+        box-shadow: 0 12px 30px -10px rgba(255,69,0,.15);
+    }
+
+    .skeleton {
+        background: linear-gradient(
+            90deg,
+            #15181E 25%,
+            #1E222B 50%,
+            #15181E 75%
+        );
+
+        background-size: 200% 100%;
+        animation: loading 1.4s infinite;
+    }
+
+    @keyframes loading {
+        from {
+            background-position: 200% 0;
         }
-        .glow-text {
-            background: linear-gradient(to right, #FF4500, #FF8C00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        to {
+            background-position: -200% 0;
         }
-        .card-hover:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px -10px rgba(255, 69, 0, 0.15);
-            border-color: rgba(255, 69, 0, 0.3);
-        }
-        .skeleton {
-            background: linear-gradient(90deg, #15181E 25%, #1E222B 50%, #15181E 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-    </style>
+    }
+</style>
+```
+
 </head>
-<body class="bg-darkbg text-gray-200 font-sans antialiased min-h-screen bg-grid">
-    
-    <!-- Header -->
-    <header class="border-b border-gray-800 bg-darkbg/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-reddit rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
-                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold tracking-tight">Reddit<span class="glow-text">Pal</span></h1>
-                    <p class="text-xs text-gray-500 font-medium">Curated programming knowledge</p>
-                </div>
-            </div>
-            
-            <!-- Sort Controls -->
-            <div class="flex bg-gray-900/50 p-1 rounded-xl border border-gray-800">
-                <button data-sort="hot" class="sort-btn px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 bg-reddit text-white border border-reddit shadow-md">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path></svg>
-                    Virality
-                </button>
-                <button data-sort="new" class="sort-btn px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 bg-transparent text-gray-400 border border-transparent hover:text-gray-200">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Latest
-                </button>
-            </div>
-        </div>
-    </header>
-    <!-- Maintenance Notice -->
-<section class="bg-yellow-500/10 border-b border-yellow-500/20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex items-center justify-center gap-3 text-yellow-400">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z">
-                </path>
-            </svg>
-            <p class="font-medium text-center">
-                RedditPal is currently undergoing scheduled maintenance. Some features may be temporarily unavailable.
-            </p>
-        </div>
+
+<body class="bg-darkbg text-gray-200 min-h-screen bg-grid">
+
+<header class="sticky top-0 z-50 border-b border-gray-800 bg-darkbg/80 backdrop-blur">
+
+```
+<div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+
+    <div>
+        <h1 class="text-3xl font-bold">
+            Reddit<span class="glow-text">Pal</span>
+        </h1>
+
+        <p class="text-gray-500 text-sm">
+            Discover the most viral programming discussions
+        </p>
     </div>
+
+    <span class="text-xs text-gray-500 uppercase tracking-widest">
+        Curated Feed
+    </span>
+
+</div>
+```
+
+</header>
+
+<section class="border-b border-yellow-500/20 bg-yellow-500/10">
+
+```
+<div class="max-w-7xl mx-auto px-6 py-3 text-center text-yellow-400 text-sm">
+    Content is refreshed automatically every few minutes.
+</div>
+```
+
 </section>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div id="posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <!-- Posts or Skeletons will be injected here -->
-        </div>
-    </main>
+<section class="max-w-7xl mx-auto px-6 py-10">
 
-    <!-- Footer -->
-    <footer class="border-t border-gray-800 mt-12 py-8 text-center text-gray-600 text-sm">
-        <p>© 2026 RedditPal. Data sourced from public Reddit APIs.</p>
-    </footer>
+```
+<h2 class="text-4xl font-bold mb-4">
+    Trending Programming Posts
+</h2>
 
-    <script>
-        // ⚠️ REPLACE THIS WITH YOUR ACTUAL CLOUDFLARE WORKER URL
-        const API_URL = ' https://redditpal.httpsredditpalfstr640workersdev.workers.dev'; 
+<p class="text-gray-400 max-w-2xl">
+    RedditPal analyzes activity from multiple programming communities
+    and ranks discussions using engagement, comments and relevance.
+</p>
+```
 
-        async function fetchPosts(sort) {
-            const container = document.getElementById('posts-container');
-            container.innerHTML = generateSkeletons(6);
-            
-            try {
-                const response = await fetch(`${API_URL}?sort=${sort}`);
-                if (!response.ok) throw new Error(`API returned ${response.status}`);
-                const posts = await response.json();
-                
-                if (posts.error) throw new Error(posts.error);
-                
-                renderPosts(posts);
-            } catch (error) {
-                container.innerHTML = `
-                    <div class="col-span-full text-center py-16 px-4">
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 text-red-500 mb-4">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-200">Failed to load posts</h3>
-                        <p class="text-gray-500 mt-2 max-w-md mx-auto">${error.message}. Make sure the Cloudflare Worker URL is correctly configured.</p>
-                        <button onclick="fetchPosts('${sort}')" class="mt-6 px-6 py-2.5 bg-reddit text-white font-medium rounded-lg hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20">
-                            Try Again
-                        </button>
-                    </div>
-                `;
-            }
-        }
+</section>
 
-        function renderPosts(posts) {
-            const container = document.getElementById('posts-container');
-            if (posts.length === 0) {
-                container.innerHTML = '<p class="col-span-full text-center text-gray-500 py-12">No posts found.</p>';
-                return;
-            }
+<main class="max-w-7xl mx-auto px-6 pb-16">
 
-            container.innerHTML = posts.map(post => `
-                <a href="${post.permalink}" target="_blank" rel="noopener noreferrer" 
-                   class="bg-cardbg border border-gray-800 rounded-xl p-5 card-hover transition-all duration-300 flex flex-col h-full group relative overflow-hidden">
-                   
-                   <div class="absolute top-0 left-0 w-1 h-full bg-reddit opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                   
-                  <div class="flex items-center justify-between mb-3">
-                    <span class="px-2.5 py-1 bg-gray-800/80 text-reddit text-xs font-bold rounded-md border border-gray-700 group-hover:border-reddit/50 transition-colors backdrop-blur-sm">
-                      r/${post.subreddit.replace('r/', '')}
-                    </span>
-                    <span class="text-xs text-gray-500 font-medium flex items-center gap-1.5">
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                      ${timeAgo(post.created_utc)}
-                    </span>
-                  </div>
-                  
-                  <h3 class="text-lg font-semibold text-gray-100 mb-4 leading-snug group-hover:text-reddit transition-colors line-clamp-3">
-                    ${post.title}
-                  </h3>
-                  
-                  <div class="mt-auto pt-4 border-t border-gray-800 flex items-center justify-between text-sm">
-                    <div class="flex items-center gap-4">
-                      <span class="flex items-center gap-1.5 text-gray-400 group-hover:text-green-400 transition-colors" title="Upvotes">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2l6 8h-4v8h-4v-8h-4l6-8z"/></svg>
-                        <span class="font-semibold">${formatNumber(post.score)}</span>
-                      </span>
-                      <span class="flex items-center gap-1.5 text-gray-400 group-hover:text-blue-400 transition-colors" title="Comments">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                        <span class="font-semibold">${formatNumber(post.num_comments)}</span>
-                      </span>
-                    </div>
-                    <span class="text-xs text-gray-600 truncate max-w-[100px] font-medium" title="Posted by u/${post.author}">
-                      u/${post.author}
-                    </span>
-                  </div>
-                </a>
-            `).join('');
-        }
+```
+<div
+    id="posts-container"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+</div>
+```
 
-        function generateSkeletons(count) {
-            return Array(count).fill(0).map(() => `
-                <div class="bg-cardbg border border-gray-800 rounded-xl p-5 h-56 flex flex-col">
-                  <div class="flex justify-between mb-4">
-                    <div class="skeleton w-24 h-6 rounded-md"></div>
-                    <div class="skeleton w-16 h-4 rounded-md"></div>
-                  </div>
-                  <div class="skeleton w-full h-6 rounded-md mb-2"></div>
-                  <div class="skeleton w-3/4 h-6 rounded-md mb-auto"></div>
-                  <div class="mt-4 pt-4 border-t border-gray-800 flex justify-between">
-                    <div class="skeleton w-20 h-5 rounded-md"></div>
-                    <div class="skeleton w-16 h-5 rounded-md"></div>
-                  </div>
-                </div>
-            `).join('');
-        }
+</main>
 
-        function formatNumber(num) {
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
-            return num;
-        }
+<footer class="border-t border-gray-800 py-8 text-center text-gray-600 text-sm">
 
-        function timeAgo(timestamp) {
-            const seconds = Math.floor(Date.now() / 1000) - timestamp;
-            const intervals = {
-                year: 31536000, month: 2592000, week: 604800, day: 86400,
-                hour: 3600, minute: 60, second: 1
-            };
-            for (const [unit, secondsInUnit] of Object.entries(intervals)) {
-                const interval = Math.floor(seconds / secondsInUnit);
-                if (interval >= 1) return `${interval} ${unit}${interval > 1 ? 's' : ''} ago`;
-            }
-            return 'just now';
-        }
+```
+© 2026 RedditPal
+```
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            const sortButtons = document.querySelectorAll('.sort-btn');
-            sortButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    // Reset all buttons
-                    sortButtons.forEach(b => {
-                        b.classList.remove('bg-reddit', 'text-white', 'border', 'border-reddit', 'shadow-md');
-                        b.classList.add('bg-transparent', 'text-gray-400', 'border-transparent');
-                    });
-                    // Activate clicked button
-                    btn.classList.remove('bg-transparent', 'text-gray-400', 'border-transparent');
-                    btn.classList.add('bg-reddit', 'text-white', 'border', 'border-reddit', 'shadow-md');
-                    
-                    fetchPosts(btn.dataset.sort);
-                });
-            });
-            
-            // Initial load
-            fetchPosts('hot');
-        });
-    </script>
+</footer>
+
+<script src="script.js"></script>
+
 </body>
 </html>
