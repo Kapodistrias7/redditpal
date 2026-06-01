@@ -1,5 +1,6 @@
 const API_URL =
-"redditpal-api";
+"redditpal-api.httpsredditpalfstr640workersdev.workers.dev
+";
 
 const container =
 document.getElementById("posts-container");
