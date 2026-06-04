@@ -1,4 +1,4 @@
-const API_URL = "https://redditpal-api.httpsredditpalfstr640workersdev.workers.dev";
+const API_URL = "falling-rice-6899.httpsredditpalfstr640workersdev.workers.dev";
 
 const container = document.getElementById("posts-container");
 
