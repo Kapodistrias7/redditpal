@@ -1,148 +1,317 @@
 <!DOCTYPE html>
-
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedditPal</title>
+    <meta name="description" content="RedditPal - Discover the most viral programming discussions">
+    <title>RedditPal - Curated Reddit Feed</title>
 
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<script src="https://cdn.tailwindcss.com"></script>
-
-<script>
-    tailwind.config = {
-        darkMode: 'class',
-        theme: {
-            extend: {
-                colors: {
-                    reddit: '#FF4500',
-                    darkbg: '#0B0D10',
-                    cardbg: '#15181E'
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        reddit: '#FF4500',
+                        darkbg: '#0B0D10',
+                        cardbg: '#15181E',
+                        secondary: '#1E222B'
+                    },
+                    spacing: {
+                        'ad-space': '300px'
+                    }
                 }
             }
         }
-    }
-</script>
+    </script>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<style>
-    body {
-        font-family: Inter, system-ui, sans-serif;
-    }
-
-    .bg-grid {
-        background-size: 40px 40px;
-        background-image:
-            linear-gradient(to right, rgba(255,255,255,.03) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,.03) 1px, transparent 1px);
-    }
-
-    .glow-text {
-        background: linear-gradient(to right,#FF4500,#FF8C00);
-        -webkit-background-clip:text;
-        -webkit-text-fill-color:transparent;
-    }
-
-    .card-hover:hover {
-        transform: translateY(-4px);
-        border-color: rgba(255,69,0,.3);
-        box-shadow: 0 12px 30px -10px rgba(255,69,0,.15);
-    }
-
-    .skeleton {
-        background: linear-gradient(
-            90deg,
-            #15181E 25%,
-            #1E222B 50%,
-            #15181E 75%
-        );
-
-        background-size: 200% 100%;
-        animation: loading 1.4s infinite;
-    }
-
-    @keyframes loading {
-        from {
-            background-position: 200% 0;
+    <style>
+        * {
+            box-sizing: border-box;
         }
-        to {
-            background-position: -200% 0;
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
-    }
-</style>
 
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,.02) 1px, transparent 1px);
+        }
 
+        .glow-text {
+            background: linear-gradient(135deg, #FF4500 0%, #FF8C00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 69, 0, 0.1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 69, 0, 0.3);
+            box-shadow: 0 12px 30px -10px rgba(255, 69, 0, 0.15);
+        }
+
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                #15181E 25%,
+                #1E222B 50%,
+                #15181E 75%
+            );
+            background-size: 200% 100%;
+            animation: loading 1.4s infinite;
+        }
+
+        @keyframes loading {
+            from {
+                background-position: 200% 0;
+            }
+            to {
+                background-position: -200% 0;
+            }
+        }
+
+        .ad-container {
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.05), rgba(255, 140, 0, 0.05));
+            border: 1px solid rgba(255, 69, 0, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 14px;
+            min-height: 250px;
+        }
+
+        .post-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .post-title {
+            line-height: 1.4;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .post-meta {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-upvote {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .badge-comment {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .sticky {
+                position: relative;
+            }
+
+            .ad-container {
+                min-height: 200px;
+            }
+
+            .post-title {
+                font-size: 16px;
+            }
+
+            main {
+                padding: 0 16px 16px 16px;
+            }
+        }
+
+        /* Loading state */
+        .loading-card {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Prevent layout shift */
+        .post-container {
+            scroll-margin-top: 80px;
+        }
+    </style>
 </head>
 
 <body class="bg-darkbg text-gray-200 min-h-screen bg-grid">
 
-<header class="sticky top-0 z-50 border-b border-gray-800 bg-darkbg/80 backdrop-blur">
-
-
-<div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-
-    <div>
-        <h1 class="text-3xl font-bold">
-            Reddit<span class="glow-text">Pal</span>
-        </h1>
-
-        <p class="text-gray-500 text-sm">
-            Discover the most viral programming discussions
-        </p>
+<!-- Header -->
+<header class="sticky top-0 z-50 border-b border-gray-800 bg-darkbg/90 backdrop-blur-sm">
+    <div class="max-w-full mx-auto px-4 md:px-6 py-4 md:py-5 flex items-center justify-between">
+        <div class="flex-1">
+            <h1 class="text-2xl md:text-3xl font-bold">
+                Reddit<span class="glow-text">Pal</span>
+            </h1>
+            <p class="text-gray-500 text-xs md:text-sm hidden sm:block">
+                Discover the most viral programming discussions
+            </p>
+        </div>
+        <span class="text-xs text-gray-500 uppercase tracking-widest whitespace-nowrap ml-4">
+            Curated Feed
+        </span>
     </div>
-
-    <span class="text-xs text-gray-500 uppercase tracking-widest">
-        Curated Feed
-    </span>
-
-</div>
-
-
 </header>
 
+<!-- Info Banner -->
 <section class="border-b border-yellow-500/20 bg-yellow-500/10">
-
-
-<div class="max-w-7xl mx-auto px-6 py-3 text-center text-yellow-400 text-sm">
-    Content is refreshed automatically every few minutes.
-</div>
-
-
+    <div class="max-w-full mx-auto px-4 md:px-6 py-2 md:py-3 text-center text-yellow-400 text-xs md:text-sm">
+        ✨ Content is refreshed automatically every few minutes.
+    </div>
 </section>
 
-<section class="max-w-7xl mx-auto px-6 py-10">
-
-
-<h2 class="text-4xl font-bold mb-4">
-    Trending Programming Posts
-</h2>
-
-<p class="text-gray-400 max-w-2xl">
-    RedditPal analyzes activity from multiple programming communities
-    and ranks discussions using engagement, comments and relevance.
-</p>
-
-
+<!-- Hero Section -->
+<section class="border-b border-gray-800 bg-gradient-to-b from-secondary/30 to-transparent">
+    <div class="max-w-full mx-auto px-4 md:px-6 py-8 md:py-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-3 md:mb-4">
+            Trending Programming Posts
+        </h2>
+        <p class="text-gray-400 text-sm md:text-base max-w-2xl">
+            RedditPal analyzes activity from multiple programming communities and curates the most engaging discussions based on community engagement and relevance.
+        </p>
+    </div>
 </section>
 
-<main class="max-w-7xl mx-auto px-6 pb-16">
+<!-- Main Content -->
+<main class="max-w-full">
+    <div class="mx-auto max-w-7xl px-4 md:px-6 py-8 md:py-12">
+        
+        <!-- Mobile: No sidebar ads -->
+        <!-- Desktop: Three column layout with ads -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            
+            <!-- Posts Container (takes up 2-3 columns on desktop) -->
+            <div class="col-span-1 md:col-span-2 lg:col-span-3">
+                <div id="posts-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6">
+                    <!-- Posts will be loaded here -->
+                </div>
+            </div>
 
+            <!-- Right Sidebar - Ads Space (Desktop only) -->
+            <aside class="hidden md:block md:col-span-1">
+                <div class="sticky top-24 space-y-6">
+                    
+                    <!-- Ad Space 1 -->
+                    <div class="ad-container rounded-lg">
+                        <div class="text-center">
+                            <p class="font-semibold">Advertisement</p>
+                            <p class="text-xs mt-2">Premium space available</p>
+                        </div>
+                    </div>
 
-<div
-    id="posts-container"
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-</div>
+                    <!-- Ad Space 2 -->
+                    <div class="ad-container rounded-lg">
+                        <div class="text-center">
+                            <p class="font-semibold">Advertisement</p>
+                            <p class="text-xs mt-2">Premium space available</p>
+                        </div>
+                    </div>
 
+                    <!-- Info Widget -->
+                    <div class="bg-secondary rounded-lg p-4 border border-gray-700">
+                        <h3 class="font-semibold text-sm mb-3">About RedditPal</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Discover trending programming discussions from Reddit's most active communities, all in one curated feed.
+                        </p>
+                    </div>
 
+                </div>
+            </aside>
+
+        </div>
+
+        <!-- Mobile: Bottom Ad Space -->
+        <div class="md:hidden mt-8">
+            <div class="ad-container rounded-lg mb-6">
+                <div class="text-center">
+                    <p class="font-semibold">Advertisement</p>
+                    <p class="text-xs mt-2">Premium space available</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </main>
 
-<footer class="border-t border-gray-800 py-8 text-center text-gray-600 text-sm">
+<!-- Loading Skeleton -->
+<template id="skeleton-template">
+    <div class="loading-card bg-secondary rounded-lg overflow-hidden">
+        <div class="skeleton h-40 w-full mb-3"></div>
+        <div class="skeleton h-4 w-3/4 mb-2 mx-4 rounded"></div>
+        <div class="skeleton h-4 w-1/2 mx-4 rounded mb-4"></div>
+    </div>
+</template>
 
+<!-- Post Card Template -->
+<template id="post-template">
+    <article class="post-container bg-cardbg rounded-lg overflow-hidden card-hover post-card p-4 md:p-5">
+        
+        <!-- Post Header -->
+        <div class="flex items-start justify-between mb-3 gap-3">
+            <div class="flex-1">
+                <h3 class="text-sm md:text-base font-semibold text-gray-100 post-title mb-2"></h3>
+            </div>
+        </div>
 
-© 2026 RedditPal
+        <!-- Post Metadata -->
+        <div class="flex flex-wrap gap-2 mb-4">
+            <span class="badge badge-upvote">👍 <span class="upvotes">0</span></span>
+            <span class="badge badge-comment">💬 <span class="comments">0</span></span>
+        </div>
 
+        <!-- Post Description -->
+        <p class="text-gray-400 text-xs md:text-sm mb-4 line-clamp-2 flex-1"></p>
 
+        <!-- Post Footer -->
+        <div class="flex items-center justify-between text-xs text-gray-500 border-t border-gray-700 pt-3 mt-auto">
+            <span class="subreddit">r/programming</span>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="text-reddit hover:text-orange-400 transition-colors font-medium">
+                View Post →
+            </a>
+        </div>
+
+    </article>
+</template>
+
+<!-- Footer -->
+<footer class="border-t border-gray-800 bg-secondary/30 py-8 md:py-12 text-center text-gray-500 text-xs md:text-sm">
+    <div class="max-w-7xl mx-auto px-4">
+        <p class="mb-2">© 2026 RedditPal</p>
+        <p class="text-gray-600">Not affiliated with Reddit, Inc.</p>
+    </div>
 </footer>
 
 <script src="script.js"></script>
