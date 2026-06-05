@@ -1,4 +1,4 @@
-const API_URL = "https://falling-rice-6899.httpsredditpalfstr640workersdev.workers.dev";
+const API_URL = "http://localhost:3000/api/posts"; // Change to your deployed server URL
 
 const container = document.getElementById("posts-container");
 
@@ -20,18 +20,8 @@ async function fetchPosts() {
 
         const posts = await response.json();
 
-        if (posts.maintenance) {
-            container.innerHTML = `
-                <div class="col-span-full text-center py-24">
-                    <h2 class="text-4xl font-bold text-yellow-400 mb-4">
-                        Under Maintenance
-                    </h2>
-                    <p class="text-gray-400">
-                        ${posts.message}
-                    </p>
-                </div>
-            `;
-            return;
+        if (posts.error) {
+            throw new Error(posts.error);
         }
 
         renderPosts(posts);
@@ -40,13 +30,13 @@ async function fetchPosts() {
         container.innerHTML = `
             <div class="col-span-full text-center py-16 md:py-24">
                 <h2 class="text-2xl md:text-3xl font-bold mb-3">
-                    Feed unavailable
+                    📡 Feed temporarily unavailable
                 </h2>
-                <p class="text-gray-500 text-sm md:text-base">
+                <p class="text-gray-500 text-sm md:text-base mb-2">
                     ${error.message}
                 </p>
-                <p class="text-gray-600 text-xs mt-2">
-                    Retrying automatically...
+                <p class="text-gray-600 text-xs">
+                    Retrying in 10 seconds...
                 </p>
             </div>
         `;
@@ -66,7 +56,7 @@ function renderPosts(posts) {
     }
 
     container.innerHTML = posts.map(post => {
-        const permalink = post.permalink || `https://reddit.com/r/${post.subreddit}/comments/${post.id}`;
+        const permalink = `https://reddit.com${post.permalink}`;
         const timeAgoText = timeAgo(post.created_utc);
         const scoreFormatted = formatNumber(post.score);
         const commentsFormatted = formatNumber(post.num_comments);
